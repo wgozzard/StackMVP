@@ -88,8 +88,8 @@ export default function CreateProjectPage() {
         user_id: session.user.id,
         title,
         description,
-        image_url: imageUrl,
-        project_url: projectUrl || null,
+        image_url: imageUrl || undefined,
+        project_url: projectUrl || undefined,
         tags,
         social_links: socialLinks,
       });

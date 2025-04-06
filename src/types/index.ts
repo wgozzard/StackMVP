@@ -20,6 +20,7 @@ export interface Project {
   project_url?: string;
   social_links: any[]; // JSONB array in Postgres
   created_at: string;
+  updated_at: string;
 }
 
 export interface StorageBucketName {
