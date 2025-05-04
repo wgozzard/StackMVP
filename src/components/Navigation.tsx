@@ -108,7 +108,7 @@ export function Navigation() {
                 
                 {profile && (
                   <div className="flex items-center gap-2">
-                    <Link href="/profile" className="group flex items-center gap-2">
+                    <Link href="/dashboard" className="group flex items-center gap-2">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={profile.avatar_url || undefined} />
                         <AvatarFallback>

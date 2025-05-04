@@ -4,7 +4,13 @@ import { Eye, ThumbsUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Database } from '@/lib/database.types';
 
-type Project = Database['public']['Tables']['projects']['Row'] & {
+type Project = {
+  id: string;
+  user_id: string;
+  title: string;
+  image_url?: string | null;
+  upvotes: number;
+  views: number;
   profile: {
     username: string;
     avatar_url: string | null;
@@ -18,17 +24,32 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, className }: ProjectCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-lg bg-[#0A0A0A] transition-all duration-300 hover:scale-[1.02]">
+    <div
+      className={`flex flex-col justify-between bg-[#101014] rounded-xl border border-gray-800 shadow-sm w-[320px] h-[320px] mx-auto transition-transform duration-200 hover:scale-[1.03] ${className || ''}`}
+    >
+      {/* Top: Avatar and Username */}
+      <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={project.profile.avatar_url || undefined} />
+          <AvatarFallback className="bg-blue-600 text-xs text-white">
+            {project.profile.username.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <span className="text-base font-medium text-gray-200 truncate max-w-[180px]">
+          {project.profile.username}
+        </span>
+      </div>
+
       {/* Project Image */}
       <Link href={`/projects/${project.id}`} className="block">
-        <div className="relative aspect-video w-full overflow-hidden">
+        <div className="relative w-full h-[140px] overflow-hidden rounded-md mx-auto">
           {project.image_url ? (
             <Image
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
               src={project.image_url}
               alt={project.title}
-              width={1920}
-              height={1080}
+              width={320}
+              height={140}
               priority={false}
             />
           ) : (
@@ -39,23 +60,19 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
         </div>
       </Link>
 
-      {/* Project Info Bar */}
-      <div className="flex items-center justify-between bg-[#0F1117] px-4 py-3">
-        <Link 
-          href={`/profile/${project.profile.username}`}
-          className="group/avatar flex items-center gap-2"
+      {/* Project Title */}
+      <div className="px-4 pt-3 pb-1 min-h-[32px] flex items-center">
+        <Link
+          href={`/projects/${project.id}`}
+          className="block font-bold text-lg text-white truncate max-w-full"
+          title={project.title}
         >
-          <Avatar className="h-6 w-6">
-            <AvatarImage src={project.profile.avatar_url || undefined} />
-            <AvatarFallback className="bg-blue-600 text-xs text-white">
-              {project.profile.username.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm text-gray-300 transition-colors group-hover/avatar:text-blue-400">
-            {project.profile.username}
-          </span>
+          {project.title}
         </Link>
+      </div>
 
+      {/* Bottom: Like and View Counts */}
+      <div className="flex items-center justify-between px-4 pb-4 pt-2 mt-auto">
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <div className="flex items-center gap-1.5">
             <ThumbsUp className="h-4 w-4" />

@@ -4,52 +4,36 @@ import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-interface AuthFormProps {
-  type: 'login' | 'signup';
-}
-
-export function AuthForm({ type }: AuthFormProps) {
-  const [email, setEmail] = useState('');
+export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect_to') || '/dashboard';
   const supabase = createClientComponentClient();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
 
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      if (type === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (error) throw error;
-        
-        toast.success('Logged in successfully');
-        router.push(redirectTo);
-        router.refresh();
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
-        });
+      const { error } = await supabase.auth.updateUser({
+        password: password,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast.success('Verification email sent! Please check your inbox.');
-      }
+      toast.success('Password updated successfully');
+      router.push('/auth/login');
     } catch (error: any) {
       toast.error(error.message);
       console.error(error);
@@ -59,26 +43,18 @@ export function AuthForm({ type }: AuthFormProps) {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-8">
+    <div className="mx-auto max-w-md space-y-6 px-4 py-12">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold">Set new password</h1>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          Enter your new password below
+        </p>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-            placeholder="you@example.com"
-          />
-        </div>
-
-        <div>
           <label htmlFor="password" className="block text-sm font-medium">
-            Password
+            New Password
           </label>
           <div className="relative mt-1">
             <input
@@ -87,9 +63,9 @@ export function AuthForm({ type }: AuthFormProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
               className="block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
               placeholder="••••••••"
-              minLength={6}
             />
             <button
               type="button"
@@ -103,16 +79,24 @@ export function AuthForm({ type }: AuthFormProps) {
               )}
             </button>
           </div>
-          {type === 'login' && (
-            <div className="mt-1 text-right">
-              <a
-                href="/auth/reset-password"
-                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
-              >
-                Forgot password?
-              </a>
-            </div>
-          )}
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium">
+            Confirm New Password
+          </label>
+          <div className="relative mt-1">
+            <input
+              id="confirmPassword"
+              type={showPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+              placeholder="••••••••"
+            />
+          </div>
         </div>
 
         <button
@@ -123,10 +107,10 @@ export function AuthForm({ type }: AuthFormProps) {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {type === 'login' ? 'Logging in...' : 'Creating account...'}
+              Updating password...
             </>
           ) : (
-            type === 'login' ? 'Log in' : 'Create account'
+            'Update password'
           )}
         </button>
       </form>
