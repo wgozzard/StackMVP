@@ -20,13 +20,21 @@ export default async function DashboardPage() {
     <main className="container mx-auto px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Projects</h1>
-        <Link
-          href="/projects/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          <Plus className="h-5 w-5" />
-          Create New Project
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/profile/edit"
+            className="inline-flex items-center gap-2 rounded-lg border border-blue-600 bg-white px-4 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50 dark:bg-gray-900 dark:text-blue-400 dark:hover:bg-gray-800"
+          >
+            Edit Profile
+          </Link>
+          <Link
+            href="/projects/new"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          >
+            <Plus className="h-5 w-5" />
+            Create New Project
+          </Link>
+        </div>
       </div>
 
       {projects.length === 0 ? (

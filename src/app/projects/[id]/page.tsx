@@ -6,6 +6,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Globe, ExternalLink, Eye, ThumbsUp } from 'lucide-react';
 import { DeleteProjectButton } from '@/components/DeleteProjectButton';
+import UpvoteButton from './UpvoteButton';
 
 interface PageProps {
   params: {
@@ -52,6 +53,15 @@ export default async function ProjectPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-black">
+      {/* Back to StacknFlow button */}
+      <div className="mx-auto max-w-5xl px-4 pt-6 pb-2">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-900 px-3 py-1.5 text-sm font-medium text-gray-200 hover:bg-gray-800 hover:text-white transition-colors"
+        >
+          ← Back to StacknFlow
+        </Link>
+      </div>
       {/* GitHub-style header with border */}
       <div className="border-b border-gray-800">
         <div className="mx-auto max-w-5xl px-4 py-6">
@@ -112,6 +122,10 @@ export default async function ProjectPage({ params }: PageProps) {
                 <DeleteProjectButton projectId={project.id} />
               </div>
             )}
+          </div>
+          {/* Like Button */}
+          <div className="mt-4">
+            <UpvoteButton projectId={project.id} initialUpvotes={project.upvotes} isAuthenticated={!!user} />
           </div>
         </div>
 
