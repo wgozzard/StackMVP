@@ -5,6 +5,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getSiteUrl } from '@/lib/constants';
 
 interface AuthFormProps {
   type: 'login' | 'signup';
@@ -38,18 +39,9 @@ export function AuthForm({ type }: AuthFormProps) {
         router.push(redirectTo);
         router.refresh();
       } else {
-        // Determine the correct redirect URL based on the environment
-        let redirectUrl;
-        
-        // In development, use the full localhost URL
-        if (window.location.hostname === 'localhost') {
-          // Use explicit http://localhost:PORT format instead of origin
-          const port = window.location.port || '3000';
-          redirectUrl = `http://localhost:${port}/auth/callback`;
-        } else {
-          // In production, use the full site URL
-          redirectUrl = `${window.location.origin}/auth/callback`;
-        }
+        // Get the appropriate site URL for the current environment
+        const siteUrl = getSiteUrl();
+        const redirectUrl = `${siteUrl}/auth/callback`;
         
         console.log('Signup using redirect URL:', redirectUrl);
         

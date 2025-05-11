@@ -5,6 +5,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/constants';
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('');
@@ -16,20 +17,11 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      // Determine the correct redirect URL based on the environment
-      let redirectUrl;
+      // Get the appropriate site URL for the current environment
+      const siteUrl = getSiteUrl();
+      const redirectUrl = `${siteUrl}/auth/update-password`;
       
-      // In development, use explicit localhost URL format
-      if (window.location.hostname === 'localhost') {
-        // Use explicit http://localhost:PORT format instead of origin
-        const port = window.location.port || '3000';
-        redirectUrl = `http://localhost:${port}/auth/update-password`;
-      } 
-      // In production (Vercel), use the actual domain
-      else {
-        // Use the current site URL as the base
-        redirectUrl = `${window.location.origin}/auth/update-password`;
-      }
+      console.log('Password reset using redirect URL:', redirectUrl);
       
       console.log('Using redirect URL:', redirectUrl);
       
