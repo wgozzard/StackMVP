@@ -110,7 +110,7 @@ export function Navigation() {
                   <div className="flex items-center gap-2">
                     <Link href="/profile/edit" className="group flex items-center gap-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={profile.avatar_url || undefined} />
+                        <AvatarImage src={profile.avatar_url || '/default-avatar.png'} />
                         <AvatarFallback>
                           {profile.username.slice(0, 2).toUpperCase()}
                         </AvatarFallback>

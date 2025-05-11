@@ -13,6 +13,17 @@ export default async function HomePage() {
   const { data: { session } } = await supabase.auth.getSession();
   const projects = await getProjects({ limit: 12 });
 
+  // Get accurate like counts for each project
+  for (const project of projects) {
+    const { count } = await supabase
+      .from('project_upvotes')
+      .select('*', { count: 'exact', head: true })
+      .eq('project_id', project.id);
+    
+    // Update the project's upvote count with the actual count from project_upvotes
+    project.upvotes = count || 0;
+  }
+
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="mx-auto max-w-7xl">

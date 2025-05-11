@@ -30,7 +30,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
       {/* Top: Avatar and Username */}
       <div className="flex items-center gap-2 px-4 pt-4 pb-2">
         <Avatar className="h-8 w-8">
-          <AvatarImage src={project.profile.avatar_url || undefined} />
+          <AvatarImage src={project.profile.avatar_url || '/default-avatar.png'} />
           <AvatarFallback className="bg-blue-600 text-xs text-white">
             {project.profile.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
@@ -43,20 +43,14 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
       {/* Project Image */}
       <Link href={`/projects/${project.id}`} className="block">
         <div className="relative w-full h-[140px] overflow-hidden rounded-md mx-auto">
-          {project.image_url ? (
-            <Image
-              className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-              src={project.image_url}
-              alt={project.title}
-              width={320}
-              height={140}
-              priority={false}
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-gray-800">
-              <span className="text-sm text-gray-400">No image</span>
-            </div>
-          )}
+          <Image
+            className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+            src={project.image_url || '/default-project.png'}
+            alt={project.title}
+            width={320}
+            height={140}
+            priority={false}
+          />
         </div>
       </Link>
 
@@ -72,6 +66,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
       </div>
 
       {/* Bottom: Like and View Counts */}
+      {/*
       <div className="flex items-center justify-between px-4 pb-4 pt-2 mt-auto">
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <div className="flex items-center gap-1.5">
@@ -84,6 +79,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           </div>
         </div>
       </div>
+      */}
     </div>
   );
 } 

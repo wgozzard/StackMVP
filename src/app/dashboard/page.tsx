@@ -16,8 +16,27 @@ export default async function DashboardPage() {
 
   const projects = await getProjects({ userId: session.user.id });
 
+  // Get accurate like counts for each project
+  for (const project of projects) {
+    const { count } = await supabase
+      .from('project_upvotes')
+      .select('*', { count: 'exact', head: true })
+      .eq('project_id', project.id);
+    
+    // Update the project's upvote count with the actual count from project_upvotes
+    project.upvotes = count || 0;
+  }
+
   return (
     <main className="container mx-auto px-4 py-8">
+      <div className="mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-900 px-3 py-1.5 text-sm font-medium text-gray-200 hover:bg-gray-800 hover:text-white transition-colors"
+        >
+          ← Back to StacknFlow
+        </Link>
+      </div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Projects</h1>
         <div className="flex gap-3">

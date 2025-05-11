@@ -6,7 +6,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Globe, ExternalLink, Eye, ThumbsUp } from 'lucide-react';
 import { DeleteProjectButton } from '@/components/DeleteProjectButton';
-import UpvoteButton from './UpvoteButton';
+import LikeButtonSection from './LikeButtonSection';
 
 interface PageProps {
   params: {
@@ -71,7 +71,7 @@ export default async function ProjectPage({ params }: PageProps) {
               className="group flex items-center gap-3"
             >
               <Avatar className="h-8 w-8">
-                <AvatarImage src={project.profiles.avatar_url || undefined} />
+                <AvatarImage src={project.profiles.avatar_url || '/default-avatar.png'} />
                 <AvatarFallback className="bg-blue-600 text-white">
                   {project.profiles.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
@@ -89,6 +89,7 @@ export default async function ProjectPage({ params }: PageProps) {
             </Link>
 
             <div className="flex items-center gap-4">
+              {/*
               <div className="flex items-center gap-3 text-sm text-gray-400">
                 <div className="flex items-center gap-1.5">
                   <ThumbsUp className="h-4 w-4" />
@@ -99,6 +100,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   <span>{project.views}</span>
                 </div>
               </div>
+              */}
             </div>
           </div>
         </div>
@@ -123,31 +125,21 @@ export default async function ProjectPage({ params }: PageProps) {
               </div>
             )}
           </div>
-          {/* Like Button */}
-          <div className="mt-4">
-            <UpvoteButton projectId={project.id} initialUpvotes={project.upvotes} isAuthenticated={!!user} />
-          </div>
         </div>
 
         {/* Project Image */}
-        {project.image_url ? (
-          <div className="mx-auto mb-8 max-w-4xl overflow-hidden rounded-xl border border-gray-800 bg-neutral-900 shadow-lg">
-            <div className="flex items-center justify-center">
-              <Image
-                src={project.image_url}
-                alt={project.title}
-                className="max-h-[500px] w-full object-contain"
-                width={1920}
-                height={1080}
-                priority
-              />
-            </div>
+        <div className="mx-auto mb-8 max-w-4xl overflow-hidden rounded-xl border border-gray-800 bg-neutral-900 shadow-lg">
+          <div className="flex items-center justify-center">
+            <Image
+              className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+              src={project.image_url || '/default-project.png'}
+              alt={project.title}
+              width={1920}
+              height={1080}
+              priority
+            />
           </div>
-        ) : (
-          <div className="mx-auto mb-8 flex max-h-[500px] max-w-4xl items-center justify-center rounded-xl border border-gray-800 bg-neutral-900 py-12 text-gray-400">
-            No image available
-          </div>
-        )}
+        </div>
 
         <hr className="my-8 border-t border-gray-800" />
 
@@ -230,6 +222,9 @@ export default async function ProjectPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Like Button at Bottom */}
+      <LikeButtonSection projectId={project.id} user={user} projectOwnerId={project.user_id} />
     </main>
   );
 } 

@@ -46,10 +46,33 @@ async function getProfileWithProjects(username: string) {
 
 export default async function ProfilePage({ params }: PageProps) {
   const { profile, projects } = await getProfileWithProjects(params.username);
+  
+  // Get accurate like counts for each project
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+
+  for (const project of projects) {
+    const { count } = await supabase
+      .from('project_upvotes')
+      .select('*', { count: 'exact', head: true })
+      .eq('project_id', project.id);
+    
+    // Update the project's upvote count with the actual count from project_upvotes
+    project.upvotes = count || 0;
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-6">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-900 px-3 py-1.5 text-sm font-medium text-gray-200 hover:bg-gray-800 hover:text-white transition-colors"
+          >
+            ← Back to StacknFlow
+          </a>
+        </div>
+
         {/* Profile Header */}
         <div className="mb-12 flex items-start gap-6">
           <Avatar className="h-24 w-24">
@@ -66,7 +89,7 @@ export default async function ProfilePage({ params }: PageProps) {
               </p>
             )}
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              Joined {new Date(profile.created_at).toLocaleDateString()}
+              Joined {new Date(profile.created_at).toISOString().slice(0, 10)}
             </p>
           </div>
         </div>
@@ -79,7 +102,7 @@ export default async function ProfilePage({ params }: PageProps) {
               No projects yet
             </p>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 justify-center">
               {projects.map((project) => (
                 <ProjectCard
                   key={project.id}

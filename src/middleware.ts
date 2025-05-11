@@ -23,6 +23,12 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.match(/^\/projects\/.*\/edit$/)
   );
 
+  // Allow public access to profile detail pages like /profile/[username]
+  const isPublicProfilePage = request.nextUrl.pathname.match(/^\/profile\/[^\/]+$/);
+  if (isPublicProfilePage) {
+    return res;
+}
+
   // Auth routes that should redirect if user is already authenticated
   const authRoutes = ['/auth/login', '/auth/signup'];
   const isAuthRoute = authRoutes.some(path => 

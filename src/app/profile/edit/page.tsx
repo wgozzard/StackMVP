@@ -68,9 +68,16 @@ export default function EditProfilePage() {
         .from('profiles')
         .update({ username, bio, avatar_url: newAvatarUrl, updated_at: new Date().toISOString() })
         .eq('user_id', user.id);
-      if (error) throw error;
+      if (error) {
+        if (error.message && error.message.toLowerCase().includes('duplicate key')) {
+          toast.error('Username already exists. Please choose another.');
+        } else {
+          throw error;
+        }
+        return;
+      }
       toast.success('Profile updated!');
-      router.refresh();
+      router.push('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Failed to update profile');
     } finally {
