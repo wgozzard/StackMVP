@@ -23,7 +23,9 @@ export default function ResetPasswordPage() {
       
       console.log('Password reset using redirect URL:', redirectUrl);
       
-      console.log('Using redirect URL:', redirectUrl);
+      // IMPORTANT: Make sure to add this URL to Supabase's authorized redirect URLs
+      // Go to Supabase Dashboard > Authentication > URL Configuration > Redirect URLs
+      // Add: https://www.stacknflow.com/auth/update-password
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,

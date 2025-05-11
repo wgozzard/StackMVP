@@ -41,21 +41,52 @@ export function AuthForm({ type }: AuthFormProps) {
       } else {
         // Get the appropriate site URL for the current environment
         const siteUrl = getSiteUrl();
+        // Make sure we use the full URL with protocol
         const redirectUrl = `${siteUrl}/auth/callback`;
         
         console.log('Signup using redirect URL:', redirectUrl);
         
-        const { error } = await supabase.auth.signUp({
+        // IMPORTANT: Make sure your domain is added to Supabase's authorized redirect URLs
+        // Go to Supabase Dashboard > Authentication > URL Configuration > Redirect URLs
+        
+        // Log the signup attempt for debugging
+        console.log('Attempting signup with email:', email);
+        
+        // Make sure email confirmation is enabled in Supabase
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: redirectUrl,
+            data: {
+              email: email,
+            }
           },
+        });
+        
+        // Log the response for debugging
+        console.log('Signup response:', {
+          user: data?.user ? 'User created' : 'No user',
+          session: data?.session ? 'Session created' : 'No session',
+          error: error ? error.message : 'No error'
         });
 
         if (error) throw error;
-
-        toast.success('Verification email sent! Please check your inbox.');
+        
+        // Check if the user was created but needs email confirmation
+        if (data?.user && !data?.session) {
+          toast.success(
+            'Account created! Please check your email for a verification link. ' +
+            'If you do not see it, check your spam folder.'
+          );
+        } else if (data?.user && data?.session) {
+          // User was created and automatically signed in (email confirmation might be disabled)
+          toast.success('Account created successfully!');
+          router.push('/create-profile');
+          router.refresh();
+        } else {
+          toast.info('Something went wrong with the signup process. Please try again.');
+        }
       }
     } catch (error: any) {
       toast.error(error.message);
