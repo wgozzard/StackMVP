@@ -10,7 +10,17 @@ export const revalidate = 60; // Revalidate this page every 60 seconds
 export default async function HomePage() {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
-  const { data: { session } } = await supabase.auth.getSession();
+  // Handle authentication gracefully for both logged-in and non-logged-in users
+  let session = null;
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (!error) {
+      session = data.session;
+    }
+  } catch (error) {
+    console.error('Error fetching session:', error);
+    // Continue without user session
+  }
   const projects = await getProjects({ limit: 12 });
 
   // Get accurate like counts for each project

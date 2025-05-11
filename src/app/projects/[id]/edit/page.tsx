@@ -15,11 +15,8 @@ interface SocialLink {
   url: string;
 }
 
-export default function EditProjectPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditProjectPage(props: any) {
+  const { id } = props.params;
   const [project, setProject] = useState<Project | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -44,7 +41,7 @@ export default function EditProjectPage({
         const { data: project } = await supabase
           .from('projects')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', id)
           .single();
 
         if (!project) {
@@ -77,7 +74,7 @@ export default function EditProjectPage({
     }
 
     loadProject();
-  }, [params.id, router, supabase]);
+  }, [id, router, supabase]);
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

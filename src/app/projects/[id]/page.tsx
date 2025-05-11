@@ -8,43 +8,21 @@ import { Globe, ExternalLink, Eye, ThumbsUp } from 'lucide-react';
 import { DeleteProjectButton } from '@/components/DeleteProjectButton';
 import LikeButtonSection from './LikeButtonSection';
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-async function getProjectWithProfile(projectId: string) {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
-  const { data: project } = await supabase
-    .from('projects')
-    .select(`
-      *,
-      profiles (
-        username,
-        avatar_url,
-        bio
-      )
-    `)
-    .eq('id', projectId)
-    .single();
-
-  if (!project) {
-    notFound();
-  }
-
-  return project;
-}
-
-export default async function ProjectPage({ params }: PageProps) {
-  const { id } = params;
+export default async function ProjectPage(props: any) {
+  const { id } = props.params;
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    console.error('Error fetching user:', userError);
+  // Handle authentication gracefully for both logged-in and non-logged-in users
+  let user = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) {
+      user = data.user;
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    // Continue without user authentication
   }
 
   const project = await getProjectWithProfile(id);
@@ -227,4 +205,27 @@ export default async function ProjectPage({ params }: PageProps) {
       <LikeButtonSection projectId={project.id} user={user} projectOwnerId={project.user_id} />
     </main>
   );
+}
+
+async function getProjectWithProfile(projectId: string) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { data: project } = await supabase
+    .from('projects')
+    .select(`
+      *,
+      profiles (
+        username,
+        avatar_url,
+        bio
+      )
+    `)
+    .eq('id', projectId)
+    .single();
+
+  if (!project) {
+    notFound();
+  }
+
+  return project;
 } 

@@ -92,6 +92,7 @@ export default function CreateProjectPage() {
         project_url: projectUrl || undefined,
         tags,
         social_links: socialLinks,
+        updated_at: new Date().toISOString(),
       });
 
       toast.success('Project created successfully');

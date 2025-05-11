@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { AuthForm } from '@/components/auth/AuthForm';
 
 export default function SignUpPage() {
@@ -11,7 +12,9 @@ export default function SignUpPage() {
         </p>
       </div>
 
-      <AuthForm type="signup" />
+      <Suspense fallback={<div className="p-4 text-center">Loading...</div>}>
+        <AuthForm type="signup" />
+      </Suspense>
 
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Already have an account?{' '}
