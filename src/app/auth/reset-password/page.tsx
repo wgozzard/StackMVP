@@ -19,9 +19,11 @@ export default function ResetPasswordPage() {
       // Determine the correct redirect URL based on the environment
       let redirectUrl;
       
-      // In development, use localhost
+      // In development, use explicit localhost URL format
       if (window.location.hostname === 'localhost') {
-        redirectUrl = `${window.location.origin}/auth/update-password`;
+        // Use explicit http://localhost:PORT format instead of origin
+        const port = window.location.port || '3000';
+        redirectUrl = `http://localhost:${port}/auth/update-password`;
       } 
       // In production (Vercel), use the actual domain
       else {
