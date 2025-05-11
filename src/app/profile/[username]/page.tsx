@@ -4,11 +4,11 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ProjectCard } from '@/components/ProjectCard';
 
-interface PageProps {
+type PageProps = {
   params: {
     username: string;
   };
-}
+};
 
 async function getProfileWithProjects(username: string) {
   const cookieStore = cookies();
