@@ -16,13 +16,23 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      // Get the current site URL, handling both development and production environments
-      const siteUrl = typeof window !== 'undefined' 
-        ? window.location.origin 
-        : process.env.NEXT_PUBLIC_SITE_URL || 'https://stacknflow-v2.vercel.app';
+      // Determine the correct redirect URL based on the environment
+      let redirectUrl;
+      
+      // In development, use localhost
+      if (window.location.hostname === 'localhost') {
+        redirectUrl = `${window.location.origin}/auth/update-password`;
+      } 
+      // In production (Vercel), use the actual domain
+      else {
+        // Use the current site URL as the base
+        redirectUrl = `${window.location.origin}/auth/update-password`;
+      }
+      
+      console.log('Using redirect URL:', redirectUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/auth/update-password`,
+        redirectTo: redirectUrl,
       });
 
       if (error) throw error;
