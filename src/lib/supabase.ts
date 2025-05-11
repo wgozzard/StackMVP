@@ -62,8 +62,10 @@ export async function getProjects(options?: {
   return data as (Project & { profiles: Pick<Profile, 'username' | 'avatar_url'> })[];
 }
 
-export async function createProject(project: Omit<Project, 'id' | 'created_at' | 'upvotes' | 'views'>) {
+export async function createProject(project: Omit<Project, 'id' | 'created_at' | 'upvotes' | 'views' | 'updated_at'>) {
   const supabase = createClient();
+  
+  // Create a new object without the updated_at field to avoid database errors
   const { data, error } = await supabase
     .from('projects')
     .insert(project)
@@ -76,7 +78,7 @@ export async function createProject(project: Omit<Project, 'id' | 'created_at' |
 
 export async function updateProject(
   projectId: string,
-  updates: Partial<Omit<Project, 'id' | 'user_id' | 'created_at'>>
+  updates: Partial<Omit<Project, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
 ) {
   const supabase = createClient();
   const { data, error } = await supabase

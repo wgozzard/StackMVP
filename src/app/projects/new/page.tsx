@@ -92,7 +92,8 @@ export default function CreateProjectPage() {
         project_url: projectUrl || undefined,
         tags,
         social_links: socialLinks,
-        updated_at: new Date().toISOString(),
+        // Remove updated_at field as it's not in the database schema
+        // Supabase likely handles this automatically
       });
 
       toast.success('Project created successfully');
