@@ -45,7 +45,8 @@ async function getProfileWithProjects(username: string) {
 }
 
 export default async function ProfilePage({ params }: PageProps) {
-  const { profile, projects } = await getProfileWithProjects(params.username);
+  const { username } = params;
+  const { profile, projects } = await getProfileWithProjects(username);
   
   // Get accurate like counts for each project
   const cookieStore = cookies();
