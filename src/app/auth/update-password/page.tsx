@@ -1,19 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   
   const router = useRouter();
   const supabase = createClientComponentClient();
+  
+  // Check if user has a valid recovery session
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        // If we have a session and the user accessed this page via password recovery
+        setHasSession(!!data.session);
+      } catch (error) {
+        console.error('Error checking session:', error);
+      } finally {
+        setIsCheckingSession(false);
+      }
+    }
+    
+    checkSession();
+  }, [supabase.auth]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,6 +64,37 @@ export default function UpdatePasswordPage() {
     }
   }
 
+  // If still checking session, show loading
+  if (isCheckingSession) {
+    return (
+      <div className="mx-auto max-w-md space-y-6 px-4 py-12 flex justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+  
+  // If no valid session, show error
+  if (!hasSession) {
+    return (
+      <div className="mx-auto max-w-md space-y-6 px-4 py-12">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600">Invalid or Expired Link</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            This password reset link is invalid or has expired. Please request a new password reset link.
+          </p>
+          <div className="mt-6">
+            <Link
+              href="/auth/reset-password"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Request New Reset Link
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="mx-auto max-w-md space-y-6 px-4 py-12">
       <div className="text-center">

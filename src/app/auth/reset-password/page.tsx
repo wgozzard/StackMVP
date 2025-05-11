@@ -16,17 +16,27 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
+      // Get the current site URL, handling both development and production environments
+      const siteUrl = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'https://stacknflow-v2.vercel.app';
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
+        redirectTo: `${siteUrl}/auth/update-password`,
       });
 
       if (error) throw error;
 
-      toast.success('Password reset email sent! Please check your inbox.');
+      toast.success('Password reset email sent! Please check your inbox and spam folders.');
       setEmail('');
     } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+      // More user-friendly error message
+      if (error.message.includes('Email not found')) {
+        toast.error('No account found with this email address. Please check your email or sign up.');
+      } else {
+        toast.error(`Error sending reset email: ${error.message}`);
+      }
+      console.error('Password reset error:', error);
     } finally {
       setIsLoading(false);
     }
