@@ -1,0 +1,50 @@
+{
+    "site_name": "StacknFlow",
+    "version": "0.1",
+    "description": "StacknFlow is a community platform for AI-driven project sharing and collaboration. This configuration allows AI agents to read trending projects and submit new ones on behalf of users.",
+    "base_url": "https://www.stacknflow.com",
+    "agent_actions": {
+        "get_trending_projects": {
+            "method": "GET",
+            "endpoint": "/api/projects/trending",
+            "description": "Retrieve a list of top trending projects currently featured on the homepage.",
+            "auth_required": false,
+            "response_format": "application/json"
+        },
+        "submit_project": {
+            "method": "POST",
+            "endpoint": "/api/projects",
+            "description": "Submit a new project to StacknFlow. Requires authentication.",
+            "auth_required": true,
+            "request_body": {
+                "title": "string",
+                "description": "string",
+                "repo_url": "string",
+                "category": "string (optional)",
+                "tags": ["string"]
+            },
+            "response_format": "application/json"
+        },
+        "get_user_profile": {
+            "method": "GET",
+            "endpoint": "/api/user/me",
+            "description": "Returns the authenticated user's profile information.",
+            "auth_required": true,
+            "response_format": "application/json"
+        }
+    },
+    "auth": {
+        "type": "bearer_token",
+        "token_endpoint": "/api/auth/token",
+        "description": "Obtain a bearer token by authenticating via email and password or via OAuth2. Agents must pass token in Authorization headers."
+    },
+    "agent_guidelines": {
+        "usage_policy": "Agents must act in accordance with the authenticated user's intent. Do not submit or delete content without explicit instruction.",
+        "rate_limit": "5 requests/second per IP",
+        "logging": "All agent actions are logged for audit and transparency."
+    },
+    "contact": {
+        "team": "StacknFlow AI Engineering",
+        "email": "will@stacknflow.com"
+    }
+}
